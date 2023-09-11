@@ -1,6 +1,9 @@
 # Install dependencies
 FROM node:18-slim AS deps
 
+RUN apt-get update -y
+RUN apt-get install -y openssl
+
 WORKDIR /app
 
 COPY package.json ./
@@ -10,6 +13,9 @@ RUN yarn install --frozen-lockfile
 
 # Build source code
 FROM node:18-slim AS builder
+
+RUN apt-get update -y
+RUN apt-get install -y openssl
 
 WORKDIR /app
 
@@ -21,6 +27,9 @@ RUN yarn build
 
 # Production runtime
 FROM node:18-slim AS runner
+
+RUN apt-get update -y
+RUN apt-get install -y openssl
 
 WORKDIR /app
 
@@ -34,6 +43,9 @@ CMD yarn prod
 
 # Development runtime
 FROM node:18-slim AS dev
+
+RUN apt-get update -y
+RUN apt-get install -y openssl
 
 WORKDIR /app
 
