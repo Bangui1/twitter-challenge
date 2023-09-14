@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, Privacy } from '@prisma/client'
 
 import { CursorPagination } from '@types'
 
@@ -18,8 +18,30 @@ export class PostRepositoryImpl implements PostRepository {
     return new PostDTO(post)
   }
 
-  async getAllByDatePaginated (options: CursorPagination): Promise<PostDTO[]> {
+  async getAllByDatePaginated (options: CursorPagination, userId: string): Promise<PostDTO[]> {
     const posts = await this.db.post.findMany({
+      where: {
+        OR: [{
+          author: {
+            OR: [
+              {
+                followers: {
+                  some: {
+                    followerId: userId
+                  }
+                }
+              },
+              {
+                privacy: Privacy.PUBLIC
+              }
+            ]
+          }
+        },
+        {
+          authorId: userId
+        }
+        ]
+      },
       cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
