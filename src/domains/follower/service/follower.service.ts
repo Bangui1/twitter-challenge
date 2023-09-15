@@ -1,4 +1,4 @@
-import { FollowDto } from '@domains/follower/dto';
+import { FollowDto } from '@domains/follower/dto'
 
 export interface FollowerService {
   createFollow: (followerId: string, followedId: string) => Promise<void>

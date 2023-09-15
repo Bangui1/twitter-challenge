@@ -1,7 +1,6 @@
-import { FollowerRepository } from "./follower.repository";
-import { Follow, PrismaClient } from "@prisma/client";
-import { FollowDto } from '@domains/follower/dto';
-
+import { FollowerRepository } from './follower.repository'
+import { Follow, PrismaClient } from '@prisma/client'
+import { FollowDto } from '@domains/follower/dto'
 
 export class FollowerRepositoryImpl implements FollowerRepository {
   constructor (private readonly db: PrismaClient) {}
