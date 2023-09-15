@@ -1,5 +1,6 @@
 import { FollowerRepository } from "./follower.repository";
 import { Follow, PrismaClient } from "@prisma/client";
+import { FollowDto } from '@domains/follower/dto';
 
 
 export class FollowerRepositoryImpl implements FollowerRepository {
@@ -12,7 +13,7 @@ export class FollowerRepositoryImpl implements FollowerRepository {
         followedId
       }
     })
-    }
+  }
 
   async delete (followId: string): Promise<void> {
     await this.db.follow.delete({
@@ -22,12 +23,13 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     })
   }
 
-  async getById (followerId: string, followedId: string): Promise<Follow | null> {
-    return await this.db.follow.findFirst({
+  async getById (followerId: string, followedId: string): Promise<FollowDto | null> {
+    const follow = await this.db.follow.findFirst({
       where: {
         followerId,
         followedId
-      },
+      }
     })
+    return follow ? new FollowDto(follow) : null
   }
 }
