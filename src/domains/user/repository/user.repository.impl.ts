@@ -58,4 +58,16 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return user ? new ExtendedUserDTO(user) : null
   }
+
+  async setUserPrivacy (userId: string, privacy: boolean): Promise<UserDTO> {
+    const user = await this.db.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        private: privacy
+      }
+    })
+    return new UserDTO(user)
+  }
 }

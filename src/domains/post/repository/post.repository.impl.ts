@@ -1,4 +1,4 @@
-import { PrismaClient, Privacy } from '@prisma/client'
+import { PrismaClient } from '@prisma/client'
 
 import { CursorPagination } from '@types'
 
@@ -32,7 +32,7 @@ export class PostRepositoryImpl implements PostRepository {
                 }
               },
               {
-                privacy: Privacy.PUBLIC
+                private: false
               }
             ]
           }
