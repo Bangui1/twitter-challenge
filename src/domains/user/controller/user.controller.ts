@@ -45,7 +45,7 @@ userRouter.delete('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK)
 })
 
-userRouter.patch('/', async (req: Request, res: Response) => {
+userRouter.patch('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { privacy } = req.query
 

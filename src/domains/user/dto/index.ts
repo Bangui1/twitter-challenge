@@ -16,11 +16,13 @@ export class ExtendedUserDTO extends UserDTO {
     this.email = user.email
     this.name = user.name
     this.password = user.password
+    this.private = user.private
   }
 
   email!: string
   username!: string
   password!: string
+  private!: boolean
 }
 export class UserViewDTO {
   constructor (user: UserViewDTO) {

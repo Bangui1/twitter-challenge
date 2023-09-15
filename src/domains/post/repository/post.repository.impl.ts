@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -65,21 +65,27 @@ export class PostRepositoryImpl implements PostRepository {
     })
   }
 
-  async getById (postId: string): Promise<PostDTO | null> {
+  async getById (postId: string): Promise<ExtendedPostDTO | null> {
     const post = await this.db.post.findUnique({
       where: {
         id: postId
+      },
+      include: {
+        author: true
       }
     })
-    return (post != null) ? new PostDTO(post) : null
+    return (post != null) ? new ExtendedPostDTO(post) : null
   }
 
-  async getByAuthorId (authorId: string): Promise<PostDTO[]> {
+  async getByAuthorId (authorId: string): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       where: {
         authorId
+      },
+      include: {
+        author: true
       }
     })
-    return posts.map(post => new PostDTO(post))
+    return posts.map(post => new ExtendedPostDTO(post))
   }
 }
