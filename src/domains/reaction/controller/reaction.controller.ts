@@ -31,5 +31,5 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
 
   await service.deleteReaction(userId, postId, reactionType)
 
-  return res.status(HttpStatus.OK)
+  return res.status(HttpStatus.OK).send(`deleted reaction for post ${postId}`)
 })
