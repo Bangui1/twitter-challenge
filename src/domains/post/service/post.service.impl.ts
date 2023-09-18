@@ -1,4 +1,4 @@
-import { CreatePostInputDTO, PostDTO } from '../dto'
+import { CommentDTO, CreatePostInputDTO, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -45,5 +45,12 @@ export class PostServiceImpl implements PostService {
       if (!follow) throw new NotFoundException('posts')
     }
     return posts
+  }
+
+  async createComment (userId: string, parentPostId: string, data: CreatePostInputDTO): Promise<CommentDTO> {
+    await validate(data)
+    const post = await this.repository.getById(parentPostId)
+    if (!post) throw new NotFoundException('post')
+    return await this.repository.createComment(userId, parentPostId, data)
   }
 }

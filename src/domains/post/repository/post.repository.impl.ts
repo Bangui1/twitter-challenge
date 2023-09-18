@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client'
 import { CursorPagination } from '@types'
 
 import { PostRepository } from '.'
-import { CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
+import { CommentDTO, CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export class PostRepositoryImpl implements PostRepository {
   constructor (private readonly db: PrismaClient) {}
@@ -87,5 +87,19 @@ export class PostRepositoryImpl implements PostRepository {
       }
     })
     return posts.map(post => new ExtendedPostDTO(post))
+  }
+
+  async createComment (userId: string, parentPostId: string, data: CreatePostInputDTO): Promise<CommentDTO> {
+    const post = await this.db.post.create({
+      data: {
+        authorId: userId,
+        parentPostId,
+        ...data
+      },
+      include: {
+        author: true
+      }
+    })
+    return new CommentDTO(post, parentPostId)
   }
 }

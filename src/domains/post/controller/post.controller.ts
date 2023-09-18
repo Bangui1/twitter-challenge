@@ -61,3 +61,13 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).send(`Deleted post ${postId}`)
 })
+
+postRouter.post('/:postId/comment', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { postId } = req.params
+  const data = req.body
+
+  const comment = await service.createComment(userId, postId, data)
+
+  return res.status(HttpStatus.CREATED).json(comment)
+})

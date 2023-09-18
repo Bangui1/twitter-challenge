@@ -42,3 +42,12 @@ export class ExtendedPostDTO extends PostDTO {
   // qtyLikes!: number
   // qtyRetweets!: number
 }
+
+export class CommentDTO extends ExtendedPostDTO {
+  constructor (post: ExtendedPostDTO, parentPostId: string) {
+    super(post)
+    this.parentPostId = parentPostId
+  }
+
+  parentPostId!: string
+}
