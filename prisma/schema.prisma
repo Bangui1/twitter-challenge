@@ -52,16 +52,19 @@ model Follow {
 model Post {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
 
-  authorId  String     @db.Uuid // Foreign Key
-  content   String     @db.VarChar(240) // Limit the content to 240 characters
-  images    String[]
-  reactions Reaction[]
+  authorId     String     @db.Uuid // Foreign Key
+  content      String     @db.VarChar(240) // Limit the content to 240 characters
+  images       String[]
+  reactions    Reaction[]
+  parentPostId String?    @db.Uuid // Optional value
+  comments     Post[]     @relation("Comments")
 
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime? // Optional value
 
-  author User @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  author     User  @relation(fields: [authorId], references: [id], onDelete: Cascade) // One to many
+  parentPost Post? @relation("Comments", fields: [parentPostId], references: [id])
 }
 
 model Reaction {
