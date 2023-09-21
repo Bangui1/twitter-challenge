@@ -1,6 +1,9 @@
 import { Request, Response, Router } from 'express'
 import HttpStatus from 'http-status'
 import 'express-async-errors'
+import { s3Client } from '@utils/aws.bucket'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 
 import { db } from '@utils'
 
@@ -52,4 +55,24 @@ userRouter.patch('/me', async (req: Request, res: Response) => {
   const user = await service.setUserPrivacy(userId, privacy === 'true')
 
   return res.status(HttpStatus.OK).json(user)
+})
+
+userRouter.post('/get-presigned-url', async (req: Request, res: Response) => {
+  try {
+    const { userId } = res.locals.context
+    const { fileName } = req.body
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName,
+      ContentType: 'multipart/form-data'
+    })
+
+    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+
+    return res.status(HttpStatus.OK).json({ url })
+  } catch (error) {
+    console.error('Error generating pre-signed URL:', error)
+    return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Unable to generate pre-signed URL' })
+  }
 })
