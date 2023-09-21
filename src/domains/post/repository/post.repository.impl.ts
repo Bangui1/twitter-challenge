@@ -6,7 +6,8 @@ import { PostRepository } from '.'
 import { CommentDTO, CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export class PostRepositoryImpl implements PostRepository {
-  constructor (private readonly db: PrismaClient) {}
+  constructor (private readonly db: PrismaClient) {
+  }
 
   async create (userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     const post = await this.db.post.create({
@@ -97,9 +98,24 @@ export class PostRepositoryImpl implements PostRepository {
         ...data
       },
       include: {
-        author: true
+        author: true,
+        parentPost: true
       }
     })
-    return new CommentDTO(post, parentPostId)
+    return new CommentDTO(post)
+  }
+
+  async getCommentsByUserId (userId: string): Promise<CommentDTO[]> {
+    const comments = await this.db.post.findMany({
+      where: {
+        authorId: userId,
+        parentPostId: { not: null }
+      },
+      include: {
+        author: true,
+        parentPost: true
+      }
+    })
+    return comments.map(comment => new CommentDTO(comment))
   }
 }
