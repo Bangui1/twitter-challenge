@@ -4,7 +4,6 @@ import { ReactionRepository } from '@domains/reaction/repository/reaction.reposi
 import { ReactionType } from '@prisma/client'
 import { ConflictException, NotFoundException } from '@utils'
 import { PostService } from '@domains/post/service'
-import { FollowerService } from '@domains/follower/service'
 import { UserService } from '@domains/user/service'
 
 export class ReactionServiceImpl implements ReactionService {

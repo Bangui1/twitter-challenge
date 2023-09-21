@@ -59,7 +59,6 @@ userRouter.patch('/me', async (req: Request, res: Response) => {
 
 userRouter.post('/get-presigned-url', async (req: Request, res: Response) => {
   try {
-    const { userId } = res.locals.context
     const { fileName } = req.body
 
     const command = new PutObjectCommand({
