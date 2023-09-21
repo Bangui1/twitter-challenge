@@ -6,4 +6,5 @@ export interface UserService {
   getUser: (userId: any) => Promise<UserDTO>
   getUserRecommendations: (userId: any, options: OffsetPagination) => Promise<UserDTO[]>
   setUserPrivacy: (userId: string, privacy: boolean) => Promise<UserDTO>
+  userCanAccess: (userId: string, searchedId: string) => Promise<boolean>
 }

@@ -70,4 +70,25 @@ export class UserRepositoryImpl implements UserRepository {
     })
     return new UserDTO(user)
   }
+
+  async getUserIfFollowedOrPublic (userId: string, searchedId: string): Promise<UserDTO | null> {
+    const user = await this.db.user.findFirst({
+      where: {
+        id: searchedId,
+        OR: [
+          {
+            followers: {
+              some: {
+                followerId: userId
+              }
+            }
+          },
+          {
+            private: false
+          }
+        ]
+      }
+    })
+    return user ? new UserDTO(user) : null
+  }
 }

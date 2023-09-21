@@ -12,7 +12,9 @@ import { UserRepositoryImpl } from '@domains/user/repository'
 
 export const reactionRouter = Router()
 
-const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db), new PostServiceImpl(new PostRepositoryImpl(db), new FollowerServiceImpl(new FollowerRepositoryImpl(db), new UserServiceImpl(new UserRepositoryImpl(db)))))
+const service: ReactionService = new ReactionServiceImpl(new ReactionRepositoryImpl(db),
+  new PostServiceImpl(new PostRepositoryImpl(db), new FollowerServiceImpl(new FollowerRepositoryImpl(db), new UserServiceImpl(new UserRepositoryImpl(db))))
+  , new UserServiceImpl(new UserRepositoryImpl(db)))
 
 reactionRouter.post('/:postId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
@@ -32,4 +34,14 @@ reactionRouter.delete('/:postId', async (req: Request, res: Response) => {
   await service.deleteReaction(userId, postId, reactionType)
 
   return res.status(HttpStatus.OK).send(`deleted reaction for post ${postId}`)
+})
+
+reactionRouter.get('/:userId', async (req: Request, res: Response) => {
+  const { userId } = req.params
+  const { reactionType } = req.body
+  const { userId: requesterId } = res.locals.context
+
+  const reactions = await service.getReactionsByUser(requesterId, userId, reactionType)
+
+  return res.status(HttpStatus.OK).json(reactions)
 })

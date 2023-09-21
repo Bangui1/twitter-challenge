@@ -25,4 +25,10 @@ export class UserServiceImpl implements UserService {
   async setUserPrivacy (userId: string, privacy: boolean): Promise<UserDTO> {
     return await this.repository.setUserPrivacy(userId, privacy)
   }
+
+  async userCanAccess (userId: string, searchedId: string): Promise<boolean> {
+    const user = await this.repository.getUserIfFollowedOrPublic(userId, searchedId)
+    if (!user) throw new NotFoundException('user')
+    return true
+  }
 }
