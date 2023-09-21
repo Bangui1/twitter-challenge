@@ -44,10 +44,10 @@ export class ExtendedPostDTO extends PostDTO {
 }
 
 export class CommentDTO extends ExtendedPostDTO {
-  constructor (post: ExtendedPostDTO, parentPostId: string) {
-    super(post)
-    this.parentPostId = parentPostId
+  constructor (comment: CommentDTO) {
+    super(comment)
+    this.parentPost = comment.parentPost
   }
 
-  parentPostId!: string
+  parentPost: PostDTO | null
 }
