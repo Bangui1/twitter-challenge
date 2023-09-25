@@ -62,7 +62,7 @@ postRouter.delete('/:postId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).send(`Deleted post ${postId}`)
 })
 
-postRouter.post('/:postId/comment', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
+postRouter.post('/comment/:postId', BodyValidation(CreatePostInputDTO), async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { postId } = req.params
   const data = req.body
@@ -70,4 +70,13 @@ postRouter.post('/:postId/comment', BodyValidation(CreatePostInputDTO), async (r
   const comment = await service.createComment(userId, postId, data)
 
   return res.status(HttpStatus.CREATED).json(comment)
+})
+
+postRouter.get('/comment/:postId', async (req: Request, res: Response) => {
+  const { postId } = req.params
+  const { limit, before, after } = req.query as Record<string, string>
+
+  const comments = await service.getCommentsByPostId(postId, { limit: Number(limit), before, after })
+
+  return res.status(HttpStatus.OK).json(comments)
 })

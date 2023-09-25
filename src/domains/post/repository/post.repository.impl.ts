@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Post, PrismaClient, ReactionType } from '@prisma/client'
 
 import { CursorPagination } from '@types'
 
@@ -72,10 +72,24 @@ export class PostRepositoryImpl implements PostRepository {
         id: postId
       },
       include: {
-        author: true
+        author: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        },
+        reactions: true
       }
     })
-    return (post != null) ? new ExtendedPostDTO(post) : null
+    if (!post) return null
+    const qtyLikes = post.reactions.filter(reaction => reaction.reactionType === ReactionType.LIKE).length
+    const qtyRetweets = post.reactions.filter(reaction => reaction.reactionType === ReactionType.RETWEET).length
+    return new ExtendedPostDTO({
+      ...post,
+      qtyComments: post._count.comments,
+      qtyLikes,
+      qtyRetweets
+    })
   }
 
   async getByAuthorId (authorId: string): Promise<ExtendedPostDTO[]> {
@@ -84,10 +98,25 @@ export class PostRepositoryImpl implements PostRepository {
         authorId
       },
       include: {
-        author: true
+        author: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        },
+        reactions: true
       }
     })
-    return posts.map(post => new ExtendedPostDTO(post))
+    return posts.map(post => {
+      const qtyLikes = post.reactions.filter(reaction => reaction.reactionType === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.reactionType === ReactionType.RETWEET).length
+      return new ExtendedPostDTO({
+        ...post,
+        qtyComments: post._count.comments,
+        qtyLikes,
+        qtyRetweets
+      })
+    })
   }
 
   async createComment (userId: string, parentPostId: string, data: CreatePostInputDTO): Promise<CommentDTO> {
@@ -98,7 +127,6 @@ export class PostRepositoryImpl implements PostRepository {
         ...data
       },
       include: {
-        author: true,
         parentPost: true
       }
     })
@@ -117,5 +145,48 @@ export class PostRepositoryImpl implements PostRepository {
       }
     })
     return comments.map(comment => new CommentDTO(comment))
+  }
+
+  async getCommentsByPostId (options: CursorPagination, postId: string): Promise<ExtendedPostDTO[]> {
+    const comments = await this.db.post.findMany({
+      where: {
+        parentPostId: postId
+      },
+      cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
+      orderBy: [
+        {
+          createdAt: 'desc'
+        },
+        {
+          id: 'asc'
+        },
+        {
+          reactions: {
+            _count: 'desc'
+          }
+        }
+      ],
+      include: {
+        _count: {
+          select: {
+            comments: true
+          }
+        },
+        reactions: true,
+        author: true
+      }
+    })
+    return comments.map(comment => {
+      const qtyLikes = comment.reactions.filter(reaction => reaction.reactionType === ReactionType.LIKE).length
+      const qtyRetweets = comment.reactions.filter(reaction => reaction.reactionType === ReactionType.RETWEET).length
+      return new ExtendedPostDTO({
+        ...comment,
+        qtyComments: comment._count.comments,
+        qtyLikes,
+        qtyRetweets
+      })
+    })
   }
 }

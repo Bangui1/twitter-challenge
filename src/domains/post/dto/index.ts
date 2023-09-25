@@ -32,18 +32,18 @@ export class ExtendedPostDTO extends PostDTO {
   constructor (post: ExtendedPostDTO) {
     super(post)
     this.author = post.author
-    // this.qtyComments = post.qtyComments
-    // this.qtyLikes = post.qtyLikes
-    // this.qtyRetweets = post.qtyRetweets
+    this.qtyComments = post.qtyComments
+    this.qtyLikes = post.qtyLikes
+    this.qtyRetweets = post.qtyRetweets
   }
 
   author!: ExtendedUserDTO
-  // qtyComments!: number
-  // qtyLikes!: number
-  // qtyRetweets!: number
+  qtyComments!: number
+  qtyLikes!: number
+  qtyRetweets!: number
 }
 
-export class CommentDTO extends ExtendedPostDTO {
+export class CommentDTO extends PostDTO {
   constructor (comment: CommentDTO) {
     super(comment)
     this.parentPost = comment.parentPost

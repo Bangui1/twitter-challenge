@@ -1,4 +1,4 @@
-import { CommentDTO, CreatePostInputDTO, PostDTO } from '../dto'
+import { CommentDTO, CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 import { PostRepository } from '../repository'
 import { PostService } from '.'
 import { validate } from 'class-validator'
@@ -52,5 +52,9 @@ export class PostServiceImpl implements PostService {
     const post = await this.repository.getById(parentPostId)
     if (!post) throw new NotFoundException('post')
     return await this.repository.createComment(userId, parentPostId, data)
+  }
+
+  async getCommentsByPostId (postId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
+    return await this.repository.getCommentsByPostId(options, postId)
   }
 }

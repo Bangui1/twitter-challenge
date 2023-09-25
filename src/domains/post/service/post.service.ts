@@ -1,4 +1,4 @@
-import { CommentDTO, CreatePostInputDTO, PostDTO } from '../dto'
+import { CommentDTO, CreatePostInputDTO, ExtendedPostDTO, PostDTO } from '../dto'
 
 export interface PostService {
   createPost: (userId: string, body: CreatePostInputDTO) => Promise<PostDTO>
@@ -7,4 +7,5 @@ export interface PostService {
   getLatestPosts: (userId: string, options: { limit?: number, before?: string, after?: string }) => Promise<PostDTO[]>
   getPostsByAuthor: (userId: any, authorId: string) => Promise<PostDTO[]>
   createComment: (userId: string, parentPostId: string, body: CreatePostInputDTO) => Promise<CommentDTO>
+  getCommentsByPostId: (postId: string, options: { limit?: number, before?: string, after?: string }) => Promise<ExtendedPostDTO[]>
 }
