@@ -8,7 +8,7 @@ export class FollowerServiceImpl implements FollowerService {
   constructor (private readonly repository: FollowerRepository, private readonly userService: UserService) {}
 
   async createFollow (followerId: string, followedId: string): Promise<void> {
-    await this.userService.getUser(followedId)
+    await this.userService.getUser(followedId, followedId)
     const follow = await this.repository.getById(followerId, followedId)
     if (follow) throw new ConflictException('FOLLOW_ALREADY_EXISTS')
     await this.repository.create(followerId, followedId)
