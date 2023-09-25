@@ -75,3 +75,12 @@ userRouter.post('/get-presigned-url', async (req: Request, res: Response) => {
     return res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({ error: 'Unable to generate pre-signed URL' })
   }
 })
+
+userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
+  const { username } = req.params
+  const { limit, before, after } = req.query as Record<string, string>
+
+  const user = await service.searchUsers(username, { limit: Number(limit), before, after })
+
+  return res.status(HttpStatus.OK).json(user)
+})

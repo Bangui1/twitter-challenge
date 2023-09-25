@@ -1,5 +1,5 @@
 import { NotFoundException } from '@utils/errors'
-import { OffsetPagination } from 'types'
+import { CursorPagination, OffsetPagination } from 'types'
 import { UserDTO, UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
@@ -30,5 +30,9 @@ export class UserServiceImpl implements UserService {
     const user = await this.repository.getUserIfFollowedOrPublic(userId, searchedId)
     if (!user) throw new NotFoundException('user')
     return true
+  }
+
+  async searchUsers (username: string, options: CursorPagination): Promise<UserViewDTO[]> {
+    return await this.repository.getUsersContainingUsername(username, options)
   }
 }

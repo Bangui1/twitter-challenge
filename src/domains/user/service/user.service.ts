@@ -1,4 +1,4 @@
-import { OffsetPagination } from '@types'
+import { CursorPagination, OffsetPagination } from '@types'
 import { UserDTO, UserViewDTO } from '../dto'
 
 export interface UserService {
@@ -7,4 +7,5 @@ export interface UserService {
   getUserRecommendations: (userId: any, options: OffsetPagination) => Promise<UserViewDTO[]>
   setUserPrivacy: (userId: string, privacy: boolean) => Promise<UserDTO>
   userCanAccess: (userId: string, searchedId: string) => Promise<boolean>
+  searchUsers: (username: string, options: CursorPagination) => Promise<UserViewDTO[]>
 }
