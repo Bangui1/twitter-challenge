@@ -2,12 +2,20 @@ import express from 'express'
 import morgan from 'morgan'
 import cookieParser from 'cookie-parser'
 import cors from 'cors'
-
-import { Constants, NodeEnv, Logger } from '@utils'
+import { Server } from 'socket.io'
+import { createServer } from 'http'
+import { Constants, NodeEnv, Logger, socketWithAuth } from '@utils'
 import { router } from '@router'
 import { ErrorHandling } from '@utils/errors'
+import { chatService } from '@domains/chat'
 
 const app = express()
+const server = createServer(app)
+const io = new Server(server, {
+  cors: {
+    origin: Constants.CORS_WHITELIST
+  }
+})
 
 // Set up request logger
 if (Constants.NODE_ENV === NodeEnv.DEV) {
@@ -30,6 +38,23 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
-app.listen(Constants.PORT, () => {
+server.listen(Constants.PORT, () => {
   Logger.info(`Server listening on port ${Constants.PORT}`)
+})
+
+io.use(socketWithAuth)
+io.on('connection', async (socket) => {
+  const { userId } = socket.handshake.auth.userId
+
+  const chatrooms = await chatService.getChatroomsByUser(userId)
+  socket.join(chatrooms.map((chatroom) => chatroom.id))
+
+  socket.on('message', async ({ chatroomId, content }) => {
+    const message = await chatService.createMessage(userId, chatroomId, content)
+    socket.broadcast.to(chatroomId).emit('message', message)
+  })
+
+  socket.on('disconnect', () => {
+    console.log('user disconnected', socket.id)
+  })
 })
