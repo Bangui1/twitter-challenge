@@ -17,8 +17,16 @@ const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
 
 /**
  * @swagger
+ * tags:
+ *   name: User
+ *   description: User management endpoints
+ */
+
+/**
+ * @swagger
  * /api/user:
  *   get:
+ *     tags: [User]
  *     summary: Get user recommendations
  *     description: Retrieve a list of user recommendations based on the authenticated user's preferences.
  *     parameters:
@@ -57,6 +65,25 @@ userRouter.get('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(users)
 })
 
+/**
+ * @swagger
+ * /api/user/me:
+ *   get:
+ *     tags: [User]
+ *     summary: Get authenticated user's information
+ *     description: Retrieve information about the authenticated user.
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserViewDTO'
+ *       '401':
+ *         description: Unauthorized - User not authenticated
+ *       '404':
+ *         description: User not found
+ */
 userRouter.get('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
@@ -69,6 +96,7 @@ userRouter.get('/me', async (req: Request, res: Response) => {
  * @swagger
  * /api/user/{id}:
  *   get:
+ *     tags: [User]
  *     summary: Get a user by ID
  *     description: Retrieve a user's information by their ID.
  *     parameters:
@@ -96,6 +124,21 @@ userRouter.get('/:userId', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user)
 })
 
+/**
+ * @swagger
+ * /api/user:
+ *   delete:
+ *     tags: [User]
+ *     summary: Delete the authenticated user
+ *     description: Delete the authenticated user's account.
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *       '401':
+ *         description: Unauthorized - User not authenticated
+ *       '500':
+ *         description: Internal Server Error
+ */
 userRouter.delete('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
 
@@ -104,6 +147,32 @@ userRouter.delete('/', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK)
 })
 
+/**
+ * @swagger
+ * /api/user/me:
+ *   patch:
+ *     tags: [User]
+ *     summary: Update authenticated user's privacy settings
+ *     description: Update the privacy settings of the authenticated user's account.
+ *     parameters:
+ *       - name: privacy
+ *         in: query
+ *         description: New privacy setting (true for private, false for public).
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserDTO'
+ *       '401':
+ *         description: Unauthorized - User not authenticated
+ *       '500':
+ *         description: Internal Server Error
+ */
 userRouter.patch('/me', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { privacy } = req.query
@@ -132,6 +201,52 @@ userRouter.post('/get-presigned-url', async (req: Request, res: Response) => {
   }
 })
 
+/**
+ * @swagger
+ * /api/user/by_username/{username}:
+ *   get:
+ *     tags: [User]
+ *     summary: Search users by username
+ *     description: Retrieve a list of users whose usernames contain a specified keyword.
+ *     parameters:
+ *       - name: username
+ *         in: path
+ *         description: The keyword to search for in usernames.
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - name: limit
+ *         in: query
+ *         description: The maximum number of users to retrieve.
+ *         required: false
+ *         schema:
+ *           type: integer
+ *       - name: before
+ *         in: query
+ *         description: Get users before a specific cursor.
+ *         required: false
+ *         schema:
+ *           type: string
+ *       - name: after
+ *         in: query
+ *         description: Get users after a specific cursor.
+ *         required: false
+ *         schema:
+ *           type: string
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserViewDTO'
+ *       '401':
+ *         description: Unauthorized - User not authenticated
+ *       '500':
+ *         description: Internal Server Error
+ */
 userRouter.get('/by_username/:username', async (req: Request, res: Response) => {
   const { username } = req.params
   const { limit, before, after } = req.query as Record<string, string>
