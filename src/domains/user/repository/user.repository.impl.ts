@@ -16,10 +16,10 @@ export class UserRepositoryImpl implements UserRepository {
   async getById (userId: string, searchedId: string): Promise<{ user: UserViewDTO, follows: boolean } | null> {
     const user = await this.db.user.findUnique({
       where: {
-        id: userId
+        id: searchedId
       },
       include: {
-        followers: {
+        follows: {
           where: {
             followerId: searchedId,
             followedId: userId
@@ -27,7 +27,7 @@ export class UserRepositoryImpl implements UserRepository {
         }
       }
     })
-    return user ? { user: new UserViewDTO(user), follows: user.followers.length === 1 } : null
+    return user ? { user: new UserViewDTO(user), follows: user.follows.length === 1 } : null
   }
 
   async delete (userId: any): Promise<void> {
