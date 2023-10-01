@@ -34,6 +34,8 @@ model User {
   follows   Follow[]   @relation(name: "follows")
   followers Follow[]   @relation(name: "followers")
   reactions Reaction[]
+  messages  Message[]
+  Chatroom  Chatroom[]
 }
 
 model Follow {
@@ -86,4 +88,31 @@ model Reaction {
 enum ReactionType {
   LIKE
   RETWEET
+}
+
+model Message {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  senderId   String @db.Uuid
+  content    String @db.VarChar(240)
+  chatroomId String @db.Uuid
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+
+  sender   User     @relation(fields: [senderId], references: [id], onDelete: Cascade) // One to many
+  chatroom Chatroom @relation(fields: [chatroomId], references: [id], onDelete: Cascade) // One to many
+}
+
+model Chatroom {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid // Primary Key
+
+  users User[]
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime? // Optional value
+
+  messages Message[]
 }
