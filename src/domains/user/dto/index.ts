@@ -26,6 +26,30 @@ export class ExtendedUserDTO extends UserDTO {
   password!: string
   private!: boolean
 }
+
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     UserViewDTO:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The unique identifier of the user.
+ *         name:
+ *           type: string
+ *           nullable: true
+ *           description: The name of the user (nullable).
+ *         username:
+ *           type: string
+ *           description: The username of the user.
+ *         profilePicture:
+ *           type: string
+ *           nullable: true
+ *           description: URL of the user's profile picture (nullable).
+ */
+
 export class UserViewDTO {
   constructor (user: UserViewDTO) {
     this.id = user.id

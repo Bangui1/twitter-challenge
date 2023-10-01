@@ -15,6 +15,39 @@ export const userRouter = Router()
 // Use dependency injection
 const service: UserService = new UserServiceImpl(new UserRepositoryImpl(db))
 
+/**
+ * @swagger
+ * /api/user:
+ *   get:
+ *     summary: Get user recommendations
+ *     description: Retrieve a list of user recommendations based on the authenticated user's preferences.
+ *     parameters:
+ *       - name: limit
+ *         in: query
+ *         description: The maximum number of recommendations to retrieve.
+ *         required: false
+ *         schema:
+ *           type: integer
+ *       - name: skip
+ *         in: query
+ *         description: The number of recommendations to skip before starting to retrieve recommendations.
+ *         required: false
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/UserViewDTO'
+ *       '401':
+ *         description: Unauthorized - User not authenticated
+ *       '500':
+ *         description: Internal Server Error
+ */
 userRouter.get('/', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { limit, skip } = req.query as Record<string, string>
@@ -32,6 +65,28 @@ userRouter.get('/me', async (req: Request, res: Response) => {
   return res.status(HttpStatus.OK).json(user)
 })
 
+/**
+ * @swagger
+ * /api/user/{id}:
+ *   get:
+ *     summary: Get a user by ID
+ *     description: Retrieve a user's information by their ID.
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: User ID
+ *         required: true
+ *         type: integer
+ *     responses:
+ *       '200':
+ *         description: Successful response
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/UserViewDTO'
+ *       '404':
+ *         description: User not found
+ */
 userRouter.get('/:userId', async (req: Request, res: Response) => {
   const { userId } = res.locals.context
   const { userId: searchedUser } = req.params
