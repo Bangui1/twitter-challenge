@@ -4,10 +4,10 @@ import { PostService } from '.'
 import { validate } from 'class-validator'
 import { ForbiddenException, NotFoundException } from '@utils'
 import { CursorPagination } from '@types'
-import { FollowerService } from '@domains/follower/service'
+import { UserService } from '@domains/user/service'
 
 export class PostServiceImpl implements PostService {
-  constructor (private readonly repository: PostRepository, private readonly followerService: FollowerService) {}
+  constructor (private readonly repository: PostRepository, private readonly userService: UserService) {}
 
   async createPost (userId: string, data: CreatePostInputDTO): Promise<PostDTO> {
     await validate(data)
@@ -25,11 +25,9 @@ export class PostServiceImpl implements PostService {
     // TODO: validate that the author has public profile or the user follows the author
     const post = await this.repository.getById(postId)
     if (!post) throw new NotFoundException('post')
-    if (post.author.private) {
-      const follow = await this.followerService.getFollow(userId, post.authorId)
-      if (!follow) throw new NotFoundException('post')
-    }
-    return post
+    if (await this.userService.userCanAccess(userId, post.authorId)) {
+      return post
+    } else throw new NotFoundException('post')
   }
 
   async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
@@ -39,12 +37,9 @@ export class PostServiceImpl implements PostService {
 
   async getPostsByAuthor (userId: any, authorId: string): Promise<PostDTO[]> {
     // TODO: throw exception when the author has a private profile and the user doesn't follow them
-    const posts = await this.repository.getByAuthorId(authorId)
-    if (posts[0].author.private) {
-      const follow = await this.followerService.getFollow(userId, authorId)
-      if (!follow) throw new NotFoundException('posts')
-    }
-    return posts
+    if (await this.userService.userCanAccess(userId, authorId)) {
+      return await this.repository.getByAuthorId(authorId)
+    } else throw new NotFoundException('post')
   }
 
   async createComment (userId: string, parentPostId: string, data: CreatePostInputDTO): Promise<CommentDTO> {
