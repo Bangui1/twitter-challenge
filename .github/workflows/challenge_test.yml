@@ -11,8 +11,6 @@ jobs:
         with:
           node-version: "18.x"
       - name: Install client dependencies
-        working-directory: ./client
         run: yarn install
       - name: Client side unit tests
-        working-directory: ./client
         run: yarn run test
