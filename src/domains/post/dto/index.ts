@@ -1,5 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
-import { ExtendedUserDTO } from '@domains/user/dto'
+import { ExtendedUserDTO, UserViewDTO } from '@domains/user/dto'
 
 export class CreatePostInputDTO {
   @IsString()
@@ -31,13 +31,13 @@ export class PostDTO {
 export class ExtendedPostDTO extends PostDTO {
   constructor (post: ExtendedPostDTO) {
     super(post)
-    this.author = post.author
+    this.author = new UserViewDTO(post.author)
     this.qtyComments = post.qtyComments
     this.qtyLikes = post.qtyLikes
     this.qtyRetweets = post.qtyRetweets
   }
 
-  author!: ExtendedUserDTO
+  author!: UserViewDTO
   qtyComments!: number
   qtyLikes!: number
   qtyRetweets!: number
