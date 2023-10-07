@@ -142,5 +142,5 @@ Fork this repository and complete the tasks. Then create a PR and start with you
 - [x] Update `GET api/post` and `GET api/post/by_user/:user_id` to return a list of `ExtendedPostDTO`.
 - [x] Update `GET api/user/:user_id` to return `UserViewDTO` and if the user follows him.
 - [x] Using [SocketIO](https://socket.io/) create an authenticated websocket to create a real-time chat between users only if they follow eachother. Also messages should be stored in the database to keep the chat history.
-- [ ] Search for a testing framework and create some unit tests. Make a CI/CD pipeline using gitlab actions to run those tests.
+- [x] Search for a testing framework and create some unit tests. Make a CI/CD pipeline using gitlab actions to run those tests.
 
