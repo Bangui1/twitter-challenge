@@ -23,4 +23,12 @@ export class FollowerServiceImpl implements FollowerService {
   async getFollow (followerId: string, followedId: string): Promise<FollowDto | null> {
     return await this.repository.getById(followerId, followedId)
   }
+
+  async getFollowers (userId: string): Promise<FollowDto[]> {
+    return await this.repository.getFollowersByUserId(userId)
+  }
+
+  async getFollows (userId: string): Promise<FollowDto[]> {
+    return await this.repository.getFollowsByUserId(userId)
+  }
 }

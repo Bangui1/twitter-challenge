@@ -31,4 +31,22 @@ export class FollowerRepositoryImpl implements FollowerRepository {
     })
     return follow ? new FollowDto(follow) : null
   }
+
+  async getFollowersByUserId (userId: string): Promise<FollowDto[]> {
+    const follows = await this.db.follow.findMany({
+      where: {
+        followedId: userId
+      }
+    })
+    return follows.map(follow => new FollowDto(follow))
+  }
+
+  async getFollowsByUserId (userId: string): Promise<FollowDto[]> {
+    const follows = await this.db.follow.findMany({
+      where: {
+        followerId: userId
+      }
+    })
+    return follows.map(follow => new FollowDto(follow))
+  }
 }

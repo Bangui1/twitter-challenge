@@ -4,7 +4,9 @@ import { ConflictException, NotFoundException } from '../../src/utils';
 const mockRepository ={
   create: jest.fn(),
   delete: jest.fn(),
-  getById: jest.fn()
+  getById: jest.fn(),
+  getFollowersByUserId: jest.fn(),
+  getFollowsByUserId: jest.fn()
 }
 
 const mockUserService = {
@@ -13,7 +15,8 @@ const mockUserService = {
   getUserRecommendations: jest.fn(),
   setUserPrivacy: jest.fn(),
   userCanAccess: jest.fn(),
-  searchUsers: jest.fn()
+  searchUsers: jest.fn(),
+  updateProfilePicture: jest.fn()
 }
 
 const service = new FollowerServiceImpl(mockRepository, mockUserService)
