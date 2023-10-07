@@ -41,6 +41,9 @@ export class ChatRepositoryImpl implements ChatRepository {
     const messages = await this.db.message.findMany({
       where: {
         chatroomId
+      },
+      orderBy: {
+        createdAt: 'asc'
       }
     })
     return messages.map(message => new MessageDTO(message))

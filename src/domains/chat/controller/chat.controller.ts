@@ -18,3 +18,11 @@ chatRouter.post('/chatroom/:userId', async (req, res) => {
 
   return res.status(200).json(chatroom)
 })
+
+chatRouter.get('/chatroom/:chatroomId', async (req, res) => {
+  const { chatroomId } = req.params
+
+  const messages = await chatService.getChatroomMessages(chatroomId)
+
+  return res.status(200).json(messages)
+})
