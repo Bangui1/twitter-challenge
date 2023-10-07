@@ -255,3 +255,13 @@ userRouter.get('/by_username/:username', async (req: Request, res: Response) => 
 
   return res.status(HttpStatus.OK).json(user)
 })
+
+userRouter.patch('/me/profile-picture', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+
+  const { url } = req.body
+
+  const user = await service.updateProfilePicture(userId, url)
+
+  return res.status(HttpStatus.OK).json(user)
+})

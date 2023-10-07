@@ -15,7 +15,7 @@ export class UserServiceImpl implements UserService {
 
   async getUserRecommendations (userId: any, options: OffsetPagination): Promise<UserViewDTO[]> {
     // TODO: make this return only users followed by users the original user follows
-    return await this.repository.getRecommendedUsersPaginated(options)
+    return await this.repository.getRecommendedUsersPaginated(options, userId)
   }
 
   async deleteUser (userId: any): Promise<void> {
@@ -27,6 +27,7 @@ export class UserServiceImpl implements UserService {
   }
 
   async userCanAccess (userId: string, searchedId: string): Promise<boolean> {
+    if (userId === searchedId) return true
     const user = await this.repository.getUserIfFollowedOrPublic(userId, searchedId)
     if (!user) throw new NotFoundException('user')
     return true
@@ -34,5 +35,9 @@ export class UserServiceImpl implements UserService {
 
   async searchUsers (username: string, options: CursorPagination): Promise<UserViewDTO[]> {
     return await this.repository.getUsersContainingUsername(username, options)
+  }
+
+  async updateProfilePicture (userId: string, picture: string): Promise<UserViewDTO> {
+    return await this.repository.updateProfilePicture(userId, picture)
   }
 }

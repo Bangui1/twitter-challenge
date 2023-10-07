@@ -8,4 +8,5 @@ export interface UserService {
   setUserPrivacy: (userId: string, privacy: boolean) => Promise<UserDTO>
   userCanAccess: (userId: string, searchedId: string) => Promise<boolean>
   searchUsers: (username: string, options: CursorPagination) => Promise<UserViewDTO[]>
+  updateProfilePicture: (userId: string, picture: string) => Promise<UserViewDTO>
 }
