@@ -19,9 +19,10 @@ export class PostRepositoryImpl implements PostRepository {
     return new PostDTO(post)
   }
 
-  async getAllByDatePaginated (options: CursorPagination, userId: string): Promise<PostDTO[]> {
+  async getAllByDatePaginated (options: CursorPagination, userId: string): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       where: {
+        parentPostId: null,
         OR: [{
           author: {
             OR: [
@@ -43,6 +44,15 @@ export class PostRepositoryImpl implements PostRepository {
         }
         ]
       },
+      include: {
+        author: true,
+        reactions: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      },
       cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
       skip: options.after ?? options.before ? 1 : undefined,
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
@@ -55,7 +65,16 @@ export class PostRepositoryImpl implements PostRepository {
         }
       ]
     })
-    return posts.map(post => new PostDTO(post))
+    return posts.map(post => {
+      const qtyLikes = post.reactions.filter(reaction => reaction.reactionType === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.reactionType === ReactionType.RETWEET).length
+      return new ExtendedPostDTO({
+        ...post,
+        qtyComments: post._count.comments,
+        qtyLikes,
+        qtyRetweets
+      })
+    })
   }
 
   async delete (postId: string): Promise<void> {
@@ -157,15 +176,15 @@ export class PostRepositoryImpl implements PostRepository {
       take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
       orderBy: [
         {
+          reactions: {
+            _count: 'desc'
+          }
+        },
+        {
           createdAt: 'desc'
         },
         {
           id: 'asc'
-        },
-        {
-          reactions: {
-            _count: 'desc'
-          }
         }
       ],
       include: {

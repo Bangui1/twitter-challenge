@@ -30,7 +30,7 @@ export class PostServiceImpl implements PostService {
     } else throw new NotFoundException('post')
   }
 
-  async getLatestPosts (userId: string, options: CursorPagination): Promise<PostDTO[]> {
+  async getLatestPosts (userId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     // TODO: filter post search to return posts from authors that the user follows
     return await this.repository.getAllByDatePaginated(options, userId)
   }
@@ -46,10 +46,17 @@ export class PostServiceImpl implements PostService {
     await validate(data)
     const post = await this.repository.getById(parentPostId)
     if (!post) throw new NotFoundException('post')
+    await this.userService.userCanAccess(userId, post.authorId)
     return await this.repository.createComment(userId, parentPostId, data)
   }
 
   async getCommentsByPostId (postId: string, options: CursorPagination): Promise<ExtendedPostDTO[]> {
     return await this.repository.getCommentsByPostId(options, postId)
+  }
+
+  async getCommentsByAuthor (userId: string, authorId: string): Promise<CommentDTO[]> {
+    if (await this.userService.userCanAccess(userId, authorId)) {
+      return await this.repository.getCommentsByUserId(authorId)
+    } else throw new NotFoundException('post')
   }
 }

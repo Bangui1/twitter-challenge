@@ -80,3 +80,12 @@ postRouter.get('/comment/:postId', async (req: Request, res: Response) => {
 
   return res.status(HttpStatus.OK).json(comments)
 })
+
+postRouter.get('/comment/by_user/:userId', async (req: Request, res: Response) => {
+  const { userId } = res.locals.context
+  const { userId: searchedId } = req.params
+
+  const comments = await service.getCommentsByAuthor(userId, searchedId)
+
+  return res.status(HttpStatus.OK).json(comments)
+})
