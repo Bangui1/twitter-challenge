@@ -12,8 +12,9 @@ generator client {
 // You only need to set the DATABASE_URL in your environment file.
 // You can find more about datasources here: https://www.prisma.io/docs/concepts/components/prisma-schema/data-sources
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
 model User {
