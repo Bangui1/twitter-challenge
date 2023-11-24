@@ -6,7 +6,7 @@ const mockRepository ={
   delete: jest.fn(),
   getById: jest.fn(),
   getFollowersByUserId: jest.fn(),
-  getFollowsByUserId: jest.fn()
+  getFollowsByUserId: jest.fn(),
 }
 
 const mockUserService = {
@@ -16,7 +16,9 @@ const mockUserService = {
   setUserPrivacy: jest.fn(),
   userCanAccess: jest.fn(),
   searchUsers: jest.fn(),
-  updateProfilePicture: jest.fn()
+  updateProfilePicture: jest.fn(),
+  getSignedUrl: jest.fn(),
+  addBucketUrl: jest.fn(),
 }
 
 const service = new FollowerServiceImpl(mockRepository, mockUserService)

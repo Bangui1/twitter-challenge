@@ -16,7 +16,8 @@ const mockPostService = {
   createPost: jest.fn(),
   deletePost: jest.fn(),
   createComment: jest.fn(),
-  getCommentsByAuthor: jest.fn()
+  getCommentsByAuthor: jest.fn(),
+  getFollowingPosts: jest.fn(),
 }
 
 const mockUserService = {
@@ -26,7 +27,9 @@ const mockUserService = {
   setUserPrivacy: jest.fn(),
   userCanAccess: jest.fn(),
   searchUsers: jest.fn(),
-  updateProfilePicture: jest.fn()
+  updateProfilePicture: jest.fn(),
+  getSignedUrl: jest.fn(),
+  addBucketUrl: jest.fn(),
 }
 
 const reactionService = new ReactionServiceImpl(mockReactionRepository, mockPostService, mockUserService)
