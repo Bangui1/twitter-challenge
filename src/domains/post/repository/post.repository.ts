@@ -6,8 +6,9 @@ export interface PostRepository {
   getAllByDatePaginated: (options: CursorPagination, userId: string) => Promise<ExtendedPostDTO[]>
   delete: (postId: string) => Promise<void>
   getById: (postId: string) => Promise<ExtendedPostDTO | null>
-  getByAuthorId: (authorId: string) => Promise<ExtendedPostDTO[]>
+  getByAuthorId: (options: CursorPagination, authorId: string) => Promise<ExtendedPostDTO[]>
   createComment: (userId: string, parentPostId: string, data: CreatePostInputDTO) => Promise<CommentDTO>
   getCommentsByUserId: (userId: string) => Promise<CommentDTO[]>
   getCommentsByPostId: (options: CursorPagination, postId: string) => Promise<ExtendedPostDTO[]>
+  getFollowingPosts: (options: CursorPagination, userId: string) => Promise<ExtendedPostDTO[]>
 }

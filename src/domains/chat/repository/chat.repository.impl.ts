@@ -1,16 +1,17 @@
 import { ChatRepository } from '@domains/chat/repository/chat.repository'
 import { PrismaClient } from '@prisma/client'
-import { ChatroomDTO, MessageDTO } from '@domains/chat/dto'
+import { ChatroomDTO, ExtendedChatroomDTO, MessageDTO } from '@domains/chat/dto'
 
 export class ChatRepositoryImpl implements ChatRepository {
   constructor (private readonly db: PrismaClient) {}
 
-  async createMessage (userId: string, chatroomId: string, content: string): Promise<MessageDTO> {
+  async createMessage (userId: string, chatroomId: string, content: string, date: Date): Promise<MessageDTO> {
     const message = await this.db.message.create({
       data: {
         senderId: userId,
         chatroomId,
-        content
+        content,
+        createdAt: date
       }
     })
     return new MessageDTO(message)
@@ -67,16 +68,17 @@ export class ChatRepositoryImpl implements ChatRepository {
     return (chatroom) ? new ChatroomDTO(chatroom) : null
   }
 
-  async getChatroomById (chatroomId: string): Promise<ChatroomDTO | null> {
+  async getChatroomById (chatroomId: string): Promise<ExtendedChatroomDTO | null> {
     const chatroom = await this.db.chatroom.findUnique({
       where: {
         id: chatroomId
       },
       include: {
-        users: true
+        users: true,
+        messages: true
       }
     })
-    return (chatroom) ? new ChatroomDTO(chatroom) : null
+    return (chatroom) ? new ExtendedChatroomDTO(chatroom) : null
   }
 
   async getChatroomsByUserId (userId: string): Promise<ChatroomDTO[]> {
@@ -89,9 +91,15 @@ export class ChatRepositoryImpl implements ChatRepository {
         }
       },
       include: {
-        users: true
+        users: true,
+        messages: {
+          orderBy: {
+            createdAt: 'desc'
+          },
+          take: 1
+        }
       }
     })
-    return chatrooms.map(chatroom => new ChatroomDTO(chatroom))
+    return chatrooms.map(chatroom => new ChatroomDTO({ ...chatroom, lastMessage: chatroom.messages[0] }))
   }
 }

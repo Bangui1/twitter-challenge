@@ -1,7 +1,7 @@
 import { ChatService } from '@domains/chat/service/chat.service'
 import { ChatRepository } from '@domains/chat/repository/chat.repository'
 import { UserService } from '@domains/user/service'
-import { ChatroomDTO, MessageDTO } from '@domains/chat/dto'
+import { ChatroomDTO, ExtendedChatroomDTO, MessageDTO } from '@domains/chat/dto'
 import { NotFoundException } from '@utils'
 
 export class ChatServiceImpl implements ChatService {
@@ -16,8 +16,8 @@ export class ChatServiceImpl implements ChatService {
     return await this.repository.createChatroom(user1Id, user2Id)
   }
 
-  async createMessage (userId: string, chatroomId: string, content: string): Promise<MessageDTO> {
-    return await this.repository.createMessage(userId, chatroomId, content)
+  async createMessage (userId: string, chatroomId: string, content: string, date: Date): Promise<MessageDTO> {
+    return await this.repository.createMessage(userId, chatroomId, content, date)
   }
 
   async getChatroomMessages (chatroomId: string): Promise<MessageDTO[]> {
@@ -30,5 +30,9 @@ export class ChatServiceImpl implements ChatService {
 
   async getChatroomsByUser (userId: string): Promise<ChatroomDTO[]> {
     return await this.repository.getChatroomsByUserId(userId)
+  }
+
+  async getChatroom (chatroomId: string): Promise<ExtendedChatroomDTO | null> {
+    return await this.repository.getChatroomById(chatroomId)
   }
 }

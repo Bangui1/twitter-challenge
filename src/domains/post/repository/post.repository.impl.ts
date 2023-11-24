@@ -111,11 +111,14 @@ export class PostRepositoryImpl implements PostRepository {
     })
   }
 
-  async getByAuthorId (authorId: string): Promise<ExtendedPostDTO[]> {
+  async getByAuthorId (options: CursorPagination, authorId: string): Promise<ExtendedPostDTO[]> {
     const posts = await this.db.post.findMany({
       where: {
         authorId
       },
+      cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
       include: {
         author: true,
         _count: {
@@ -203,6 +206,51 @@ export class PostRepositoryImpl implements PostRepository {
       return new ExtendedPostDTO({
         ...comment,
         qtyComments: comment._count.comments,
+        qtyLikes,
+        qtyRetweets
+      })
+    })
+  }
+
+  async getFollowingPosts (options: CursorPagination, userId: string): Promise<ExtendedPostDTO[]> {
+    const posts = await this.db.post.findMany({
+      where: {
+        parentPostId: null,
+        author: {
+          followers: {
+            some: {
+              followerId: userId
+            }
+          }
+        }
+      },
+      include: {
+        author: true,
+        reactions: true,
+        _count: {
+          select: {
+            comments: true
+          }
+        }
+      },
+      cursor: options.after ? { id: options.after } : (options.before) ? { id: options.before } : undefined,
+      skip: options.after ?? options.before ? 1 : undefined,
+      take: options.limit ? (options.before ? -options.limit : options.limit) : undefined,
+      orderBy: [
+        {
+          createdAt: 'desc'
+        },
+        {
+          id: 'asc'
+        }
+      ]
+    })
+    return posts.map(post => {
+      const qtyLikes = post.reactions.filter(reaction => reaction.reactionType === ReactionType.LIKE).length
+      const qtyRetweets = post.reactions.filter(reaction => reaction.reactionType === ReactionType.RETWEET).length
+      return new ExtendedPostDTO({
+        ...post,
+        qtyComments: post._count.comments,
         qtyLikes,
         qtyRetweets
       })

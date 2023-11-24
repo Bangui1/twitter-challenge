@@ -46,15 +46,24 @@ io.use(socketWithAuth)
 io.on('connection', async (socket) => {
   const { userId } = socket.handshake.auth.userId
 
-  const chatrooms = await chatService.getChatroomsByUser(userId)
-  socket.join(chatrooms.map((chatroom) => chatroom.id))
+  socket.on('message', async ({ chatId, content, date }) => {
+    console.log(chatId, content, date)
+    const message = await chatService.createMessage(userId, chatId, content, date)
+    socket.broadcast.to(chatId).emit('recieve_message', message)
+  })
 
-  socket.on('message', async ({ chatroomId, content }) => {
-    const message = await chatService.createMessage(userId, chatroomId, content)
-    socket.broadcast.to(chatroomId).emit('message', message)
+  socket.on('chatrooms', async () => {
+    const chatrooms = await chatService.getChatroomsByUser(userId)
+    socket.join(chatrooms.map((chatroom) => chatroom.id))
+  })
+
+  socket.on('chatroom', async ({ chatroomId }) => {
+    socket.join(chatroomId)
   })
 
   socket.on('disconnect', () => {
     console.log('user disconnected', socket.id)
   })
 })
+
+export default io

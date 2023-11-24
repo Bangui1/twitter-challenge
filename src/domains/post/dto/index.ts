@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
+import { ArrayMaxSize, IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator'
 import { ExtendedUserDTO, UserViewDTO } from '@domains/user/dto'
+import { ReactionDTO } from '@domains/reaction/dto'
 
 export class CreatePostInputDTO {
   @IsString()
@@ -8,8 +9,11 @@ export class CreatePostInputDTO {
     content!: string
 
   @IsOptional()
-  @MaxLength(4)
+  @ArrayMaxSize(4)
     images?: string[]
+
+  @IsOptional()
+    parentPostId?: string
 }
 
 export class PostDTO {
@@ -33,14 +37,18 @@ export class ExtendedPostDTO extends PostDTO {
     super(post)
     this.author = new UserViewDTO(post.author)
     this.qtyComments = post.qtyComments
+    this.reactions = post.reactions
+    this.parentPostId = post.parentPostId
     this.qtyLikes = post.qtyLikes
     this.qtyRetweets = post.qtyRetweets
   }
 
   author!: UserViewDTO
   qtyComments!: number
+  reactions!: ReactionDTO[]
   qtyLikes!: number
   qtyRetweets!: number
+  parentPostId: string | null
 }
 
 export class CommentDTO extends PostDTO {

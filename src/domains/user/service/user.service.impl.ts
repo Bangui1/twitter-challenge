@@ -3,6 +3,9 @@ import { CursorPagination, OffsetPagination } from 'types'
 import { UserDTO, UserViewDTO } from '../dto'
 import { UserRepository } from '../repository'
 import { UserService } from './user.service'
+import { PutObjectCommand } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import { Constants, s3Client } from '@utils'
 
 export class UserServiceImpl implements UserService {
   constructor (private readonly repository: UserRepository) {}
@@ -39,5 +42,19 @@ export class UserServiceImpl implements UserService {
 
   async updateProfilePicture (userId: string, picture: string): Promise<UserViewDTO> {
     return await this.repository.updateProfilePicture(userId, picture)
+  }
+
+  async getSignedUrl (fileName: string): Promise<string> {
+    const command = new PutObjectCommand({
+      Bucket: process.env.AWS_BUCKET_NAME,
+      Key: fileName,
+      ContentType: 'multipart/form-data'
+    })
+
+    return await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+  }
+
+  addBucketUrl (fileName: string): string {
+    return `https://${Constants.AWS_BUCKET_NAME}.s3.amazonaws.com/${fileName}`
   }
 }

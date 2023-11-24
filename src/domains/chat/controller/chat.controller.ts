@@ -5,6 +5,7 @@ import { ChatRepositoryImpl } from '@domains/chat/repository/chat.repository.imp
 import { ChatServiceImpl } from '@domains/chat/service/chat.service.impl'
 import { ChatService } from '@domains/chat/service/chat.service'
 import { db } from '@utils'
+import io from '@server'
 
 export const chatRouter = Router()
 
@@ -19,10 +20,18 @@ chatRouter.post('/chatroom/:userId', async (req, res) => {
   return res.status(200).json(chatroom)
 })
 
+chatRouter.get('/chatroom/chats', async (req, res) => {
+  const { userId } = res.locals.context
+
+  const chatrooms = await chatService.getChatroomsByUser(userId)
+
+  return res.status(200).json(chatrooms)
+})
+
 chatRouter.get('/chatroom/:chatroomId', async (req, res) => {
   const { chatroomId } = req.params
 
-  const messages = await chatService.getChatroomMessages(chatroomId)
+  const chatroom = await chatService.getChatroom(chatroomId)
 
-  return res.status(200).json(messages)
+  return res.status(200).json(chatroom)
 })

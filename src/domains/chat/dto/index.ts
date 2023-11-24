@@ -20,8 +20,22 @@ export class ChatroomDTO {
   constructor (chatroom: ChatroomDTO) {
     this.id = chatroom.id
     this.users = chatroom.users.map(user => new UserDTO(user))
+    this.lastMessage = chatroom.lastMessage ? new MessageDTO(chatroom.lastMessage) : undefined
   }
 
   id: string
   users: UserDTO[]
+  lastMessage?: MessageDTO
+}
+
+export class ExtendedChatroomDTO {
+  constructor (chatroom: ExtendedChatroomDTO) {
+    this.id = chatroom.id
+    this.users = chatroom.users.map(user => new UserDTO(user))
+    this.messages = chatroom.messages.map(message => new MessageDTO(message))
+  }
+
+  id: string
+  users: UserDTO[]
+  messages: MessageDTO[]
 }

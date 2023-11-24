@@ -186,13 +186,7 @@ userRouter.post('/get-presigned-url', async (req: Request, res: Response) => {
   try {
     const { fileName } = req.body
 
-    const command = new PutObjectCommand({
-      Bucket: process.env.AWS_BUCKET_NAME,
-      Key: fileName,
-      ContentType: 'multipart/form-data'
-    })
-
-    const url = await getSignedUrl(s3Client, command, { expiresIn: 3600 })
+    const url = await service.getSignedUrl(fileName)
 
     return res.status(HttpStatus.OK).json({ url })
   } catch (error) {
