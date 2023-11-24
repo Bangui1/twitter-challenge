@@ -38,8 +38,8 @@ app.use('/api', router)
 
 app.use(ErrorHandling)
 
-server.listen(Constants.PORT, () => {
-  Logger.info(`Server listening on port ${Constants.PORT}`)
+server.listen(() => {
+  Logger.info('Server listening on port')
 })
 
 io.use(socketWithAuth)
