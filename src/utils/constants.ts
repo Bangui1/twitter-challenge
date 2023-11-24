@@ -33,7 +33,7 @@ export class Constants {
 
   static AWS_ACCESS_KEY_ID: string = process.env.AWS_ACCESS_KEY_ID ?? 'accessKey1'
 
-  static AWS_SECRET_KEY: string = process.env.AWS_SECRET_KEY ?? 'verySecretKey1'
+  static AWS_SECRET_ACCESS_KEY: string = process.env.AWS_SECRET_ACCESS_KEY ?? 'verySecretKey1'
 
   static AWS_BUCKET_NAME: string = process.env.AWS_BUCKET_NAME ?? 'bucketName'
 }

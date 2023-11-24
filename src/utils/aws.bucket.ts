@@ -5,6 +5,6 @@ export const s3Client = new S3Client({
   region: Constants.AWS_REGION,
   credentials: {
     accessKeyId: Constants.AWS_ACCESS_KEY_ID,
-    secretAccessKey: Constants.AWS_SECRET_KEY
+    secretAccessKey: Constants.AWS_SECRET_ACCESS_KEY
   }
 })
